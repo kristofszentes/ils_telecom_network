@@ -44,5 +44,3 @@ def intensification():
 def perturbation():
 	return None
 
-print(alpha)
-#salut
