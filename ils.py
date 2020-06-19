@@ -6,8 +6,6 @@ L_ed  #liste end-office/digital hub
 L_dd  #liste digital hub/digital hub
 """
 
-
-
 def init():
 	Lce=[[0 for k in range(M)]for l in range(C)]
 	Led = [[0 for k in range(N)] for l in range(M)]
@@ -46,7 +44,40 @@ def init():
 	return None
 
 def verif(L_ce,L_ed,L_dd): #verifies it is a solution
-	return None
+	
+	#Verification de alpha
+	customers_pas_servis = 0
+	for i in range(len(L_ce)):
+		if L_ce[i] == 0:
+			customers_pas_servis += 1
+	if customers_pas_servis/len(L_ce) > alpha:
+		return False
+
+	#Verification des capacites
+	for i in range(1,len(L_ed)+1): #Les capacites des end office
+		utilisateurs = 0
+		for j in range(len(L_ce)):
+			if L_ce[j] == i:
+				utilisateurs += 1
+		if utilisateurs > Uj[i]:
+			return False
+
+	for i in range(1,len(L_dd)+1): #Les capacites des digital hubs
+		utilisateurs = 0
+		for j in range(len(L_ed)):
+			if L_ed[j] == 1:
+				utilisateurs += 1
+		if utilisateurs > Vk[i]:
+			return False
+
+	#Verifie si plus de 3 digital hubs sont selectionnes
+	selectionnes = []
+	for i in range(len(L_ed)):
+		if L_ed[i] not in selectionnes:
+			selectionnes.append(L_ed[i])
+	if len(selectionnes) < 3:
+		return False
+	return True
 
 def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given solution
 	score = 0
