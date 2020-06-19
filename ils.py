@@ -102,36 +102,60 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 
 	return score
 
-def neighbor():
-	return None
 
-def swap(Lce,Led,Ldd):
-	k1,k2 = randint(0,len(Lce)-1),randint(0,len(Lce)-1)
-	Lce[k1],Lce[k2] = Lce[k2],Lce[k1]
+def neighbor(Lce,Led,Ldd):
+	Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
+	if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd) and verif(Lce_n,Led_n,Ldd_n):
+		return Lce_n, Led_n, Ldd_n, True
+
+	else:
+		return Lce, Led, Ldd, False
+
+
+def swap(Lce, Led, Ldd):
+	k1, k2 = randint(0, len(Lce)-1), randint(0, len(Lce)-1)
+	Lce[k1],Lce[k2] = Lce[k2], Lce[k1]
 
 	k1, k2 = randint(0, len(Led) - 1), randint(0, len(Led) - 1)
 	Led[k1], Led[k2] = Led[k2], Led[k1]
 
-	if Ldd[k1]==0 and Ldd[k2 != 0]:
-		Ldd[k1],Ldd[k2] = Ldd[k2],Ldd[k1]
+	if Ldd[k1] == 0 and Ldd[k2 != 0]:
+		Ldd[k1], Ldd[k2] = Ldd[k2], Ldd[k1]
 		for i in range(len(Ldd)):
-			if Ldd[i]==k2:
-				Ldd[i]=k1
+			if Ldd[i] == k2:
+				Ldd[i] = k1
 
-	elif Ldd[k2]==0 and Ldd[k1 != 0]:
-		Ldd[k2],Ldd[k1] = Ldd[k1],Ldd[k2]
+	elif Ldd[k2] == 0 and Ldd[k1 != 0]:
+		Ldd[k2], Ldd[k1] = Ldd[k1], Ldd[k2]
 		for i in range(len(Ldd)):
-			if Ldd[i]==k1:
-				Ldd[i]=k2
+			if Ldd[i] == k1:
+				Ldd[i] = k2
+
+	return Lce, Led, Ldd
+
+def intensification(Lce,Led, Ldd):
+	compteur = 0
+	while compteur < 500:
+		Lce,Led,Ldd, new = neighbor(Lce,Led, Ldd)
+		compteur += 1
+		if new:
+			compteur = 0
+		else:
+			pass
+
+	return Lce, Led, Ldd
+
+
+
+def perturbation(Lce,Led,Ldd):
+	for k in range(100):
+		Lce_n,Led_n,Ldd_n = swap(Lce,Led,Ldd)
+		while verif(Lce_n,Led_n,Ldd_n):
+			Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
+		Lce,Led,Ldd = Lce_n, Led_n, Ldd_n
 
 	return Lce,Led,Ldd
 
-def intensification():
-	return None
-
-def perturbation():
-	return None
-
 LCE,LED,LDD=init()
+#print(verif(LCE,LED,LDD))
 
-print(verif(LCE,LED,LDD))
