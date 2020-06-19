@@ -106,9 +106,25 @@ def neighbor():
 	return None
 
 def swap(Lce,Led,Ldd):
+	k1,k2 = randint(0,len(Lce)-1),randint(0,len(Lce)-1)
+	Lce[k1],Lce[k2] = Lce[k2],Lce[k1]
 
+	k1, k2 = randint(0, len(Led) - 1), randint(0, len(Led) - 1)
+	Led[k1], Led[k2] = Led[k2], Led[k1]
 
-	return None
+	if Ldd[k1]==0 and Ldd[k2 != 0]:
+		Ldd[k1],Ldd[k2] = Ldd[k2],Ldd[k1]
+		for i in range(len(Ldd)):
+			if Ldd[i]==k2:
+				Ldd[i]=k1
+
+	elif Ldd[k2]==0 and Ldd[k1 != 0]:
+		Ldd[k2],Ldd[k1] = Ldd[k1],Ldd[k2]
+		for i in range(len(Ldd)):
+			if Ldd[i]==k1:
+				Ldd[i]=k2
+
+	return Lce,Led,Ldd
 
 def intensification():
 	return None
