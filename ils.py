@@ -9,6 +9,40 @@ L_dd  #liste digital hub/digital hub
 
 
 def init():
+	Lce=[[0 for k in range(M)]for l in range(C)]
+	Led = [[0 for k in range(N)] for l in range(M)]
+	Ldd = [[0 for k in range(N)] for l in range(N)]
+
+	capa_end = 0
+	capa_digi = 0
+	compteur = 0
+
+	for customer in C:
+		capa_end += 1
+		if capa_end <= Uj[compteur]:
+			Lce[customer][compteur] = 1
+		else:
+			capa_end = 1
+			compteur += 1
+			if compteur > M:
+				break
+			else:
+				Lce[customer][compteur] = 1
+
+	compteur = 0
+
+	for end in M:
+		capa_digi += 1
+		if capa_digi <= Uj[compteur]:
+			Lce[customer][compteur] = 1
+		else:
+			compteur += 1
+			if compteur > M:
+				break
+			else:
+				Lce[customer][compteur] = 1
+
+
 	return None
 
 def verif(L_ce,L_ed,L_dd): #verifies it is a solution
