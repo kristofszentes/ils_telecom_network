@@ -168,6 +168,7 @@ def perturbation_v1(Lce,Led,Ldd):
     while compteur < 100:
         Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
         Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
+        
         if verif(Lce_n, Led_n, Ldd_n):
             Lce,Led,Ldd = Lce_n,Led_n,Ldd_n
             compteur +=1
@@ -201,12 +202,15 @@ def main():
     Lce, Led, Ldd = init()
     score_min = score(Lce, Led, Ldd)
     print("score initial = ", score_min)
-    for nombre in range(1000):
+    for nombre in range(10000):
         Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
         score_min = min(score(Lce, Led, Ldd), score_min)
-
+        if nombre % 1000 == 0:
+        	print(score(Lce,Led,Ldd))
         Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)
+        if nombre % 1000 == 0:
+        	print(nombre,score_min)
 
     print("score final = ", score_min)
     return
