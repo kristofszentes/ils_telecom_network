@@ -191,7 +191,7 @@ Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 print("intense = ", score(Lce,Led,Ldd))
 
 Lce, Led, Ldd = perturbation(Lce,Led,Ldd)
-print("yo")
+print("ok?")
 Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 print("intense = ", score(Lce,Led,Ldd))
 
