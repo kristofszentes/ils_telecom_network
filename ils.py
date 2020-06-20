@@ -108,7 +108,8 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 
 
 def neighbor(Lce,Led,Ldd):
-    Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
+    Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
+    Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
     if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd):
         if verif(Lce_n,Led_n,Ldd_n):
             return Lce_n, Led_n, Ldd_n, True
@@ -119,11 +120,14 @@ def neighbor(Lce,Led,Ldd):
         return Lce, Led, Ldd, False
 
 
-def swap(Lce, Led, Ldd):
+def swap_ce(Lce, Led, Ldd):
     L_ce, L_ed, L_dd = Lce.copy(),Led.copy(),Ldd.copy()
     k1, k2 = randint(0, len(L_ce)-1), randint(0, len(L_ce)-1)
     L_ce[k1], L_ce[k2] = L_ce[k2], L_ce[k1]
+    return L_ce, L_ed, L_dd
 
+def swap_ed(Lce,Led,Ldd):
+    L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
     k1, k2 = randint(0, len(L_ed) - 1), randint(0, len(L_ed) - 1)
     L_ed[k1], L_ed[k2] = L_ed[k2], L_ed[k1]
 
@@ -141,7 +145,7 @@ def swap(Lce, Led, Ldd):
             if L_dd[i] == k11:
                 L_dd[i] = k22
 
-    return L_ce, L_ed, L_dd
+    return Lce,Led,Ldd
 
 
 def intensification(Lce, Led, Ldd):
@@ -159,27 +163,50 @@ def intensification(Lce, Led, Ldd):
 
 
 
-def perturbation(Lce,Led,Ldd):
+def perturbation_v1(Lce,Led,Ldd):
     compteur = 0
     while compteur < 100:
-        Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
+        Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
+        Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
         if verif(Lce_n, Led_n, Ldd_n):
-            Lce,Led,Ldd = swap(Lce_n,Led_n,Ldd_n)
+            Lce,Led,Ldd = Lce_n,Led_n,Ldd_n
             compteur +=1
         else:
             pass
     return Lce, Led, Ldd
 
+
+def perturbation_v2(Lce,Led,Ldd):
+    compteur = 0
+    while compteur < 10:
+        Lce_n,Led_n,Ldd_n = double_bridge(Lce,Led,Ldd)
+        if verif(Lce_n, Led_n, Ldd_n):
+            Lce, Led, Ldd = Lce_n, Led_n, Ldd_n
+            compteur += 1
+        else:
+            pass
+    Lce, Led, Ldd = perturbation_v1(Lce, Led, Ldd)
+    return Lce, Led, Ldd
+
+
+def double_bridge(Lce, Led, Ldd):
+    Lce_n, Led_n, Ldd_n = Lce.copy(), Led.copy(),Ldd.copy()
+    k1 = randint(0,len(Lce)-2)
+    k2 = (k1 + randint(2,len(Lce)-1))%len(Lce)
+    Lce_n[k1],Lce_n[k1+1],Lce_n[k2],Lce_n[(k2+1)%len(Lce)] = Lce[k2],Lce[(k2+1)%len(Lce)],Lce[k1],Lce[k1+1]
+    return Lce_n, Led_n, Ldd_n
+
+
 def main():
     Lce, Led, Ldd = init()
     score_min = score(Lce, Led, Ldd)
     print("score initial = ", score_min)
-    for nombre in range(30):
+    for nombre in range(1000):
         Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
         score_min = min(score(Lce, Led, Ldd), score_min)
 
-        Lce, Led, Ldd = perturbation(Lce, Led, Ldd)
+        Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)
 
     print("score final = ", score_min)
     return
