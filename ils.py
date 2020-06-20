@@ -1,4 +1,6 @@
 from read_excel import *
+from random import *
+import numpy as np
 """
 Notation utilisée par la suite
 L_ce  #liste customer/end office
@@ -86,76 +88,114 @@ def verif(L_ce,L_ed,L_dd): #verifies it is a solution
 
 def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given solution
 	score = 0
-	for i in range(len(L_ce)): #Cost of connecting customers to end offices
-		score += hij(i,L_ce[i])
+	for i in range(1,len(L_ce)+1): #Cost of connecting customers to end offices
+		score += hij[(i,L_ce[i-1])]
 
-	for i in range(len(L_ed)): #Cost of connecting end offices to digital hubs and of selecting digital hubs
+	for i in range(1,len(L_ed)+1): #Cost of connecting end offices to digital hubs and of selecting digital hubs
 		selected = []
-		score += cjk(i,L_ed[i])
-		if L_ed[i] not in selected:
-			score += fk[L_ed[i]]
-			selected.append(L_ed[i])
+		score += cjk[(i,L_ed[i-1])]
+		if L_ed[i-1] not in selected:
+			score += fk[L_ed[i-1]]
+			selected.append(L_ed[i-1])
 
-	for i in range(len(L_dd) - 1): #Cost of connecting digital hubs to each other
-		score += gkm(L_dd(i,i+1))
-	score += gkm(0,L_dd(len(L_dd)))
+	for i in range(1,len(L_dd)+1): #Cost of connecting digital hubs to each other
+		if L_dd[i-1] != 0:
+			score += gkm[(i,L_dd[i-1])]
+	#score += gkm(1,L_dd(len(L_dd)))
 
 	return score
 
 
 def neighbor(Lce,Led,Ldd):
 	Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
-	if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd) and verif(Lce_n,Led_n,Ldd_n):
-		return Lce_n, Led_n, Ldd_n, True
+	if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd):
+		if verif(Lce_n,Led_n,Ldd_n):
+			#print("interm : ", score(Lce_n, Led_n, Ldd_n))
+			return Lce_n, Led_n, Ldd_n, True
+		else:
+			#print("meilleure mais pas sol")
+			return Lce, Led, Ldd, False
 
 	else:
+		#print("pire, on garde : ", score(Lce,Led,Ldd))
 		return Lce, Led, Ldd, False
 
 
 def swap(Lce, Led, Ldd):
-	k1, k2 = randint(0, len(Lce)-1), randint(0, len(Lce)-1)
-	Lce[k1],Lce[k2] = Lce[k2], Lce[k1]
+	L_ce, L_ed, L_dd = Lce.copy(),Led.copy(),Ldd.copy()
+	k1, k2 = randint(0, len(L_ce)-1), randint(0, len(L_ce)-1)
+	L_ce[k1], L_ce[k2] = L_ce[k2], L_ce[k1]
 
-	k1, k2 = randint(0, len(Led) - 1), randint(0, len(Led) - 1)
-	Led[k1], Led[k2] = Led[k2], Led[k1]
+	k1, k2 = randint(0, len(L_ed) - 1), randint(0, len(L_ed) - 1)
+	L_ed[k1], L_ed[k2] = L_ed[k2], L_ed[k1]
 
-	if Ldd[k1] == 0 and Ldd[k2 != 0]:
-		Ldd[k1], Ldd[k2] = Ldd[k2], Ldd[k1]
+	k11, k22 = L_ed[k1], L_ed[k2]
+
+	if L_dd[k11] == 0 and L_dd[k22 != 0]:
+		L_dd[k11], L_dd[k22] = L_dd[k22], L_dd[k11]
 		for i in range(len(Ldd)):
-			if Ldd[i] == k2:
-				Ldd[i] = k1
+			if L_dd[i] == k22:
+				L_dd[i] = k11
 
-	elif Ldd[k2] == 0 and Ldd[k1 != 0]:
-		Ldd[k2], Ldd[k1] = Ldd[k1], Ldd[k2]
+	elif L_dd[k22] == 0 and L_dd[k11 != 0]:
+		L_dd[k22], L_dd[k11] = L_dd[k11], L_dd[k22]
 		for i in range(len(Ldd)):
-			if Ldd[i] == k1:
-				Ldd[i] = k2
+			if L_dd[i] == k11:
+				L_dd[i] = k22
 
-	return Lce, Led, Ldd
+	return L_ce, L_ed, L_dd
 
 def intensification(Lce,Led, Ldd):
 	compteur = 0
-	while compteur < 500:
-		Lce,Led,Ldd, new = neighbor(Lce,Led, Ldd)
-		compteur += 1
+	while compteur < 25:
+		Lce, Led, Ldd, new = neighbor(Lce, Led, Ldd)
+
 		if new:
 			compteur = 0
+
 		else:
-			pass
+			compteur += 1
 
 	return Lce, Led, Ldd
 
 
 
 def perturbation(Lce,Led,Ldd):
-	for k in range(100):
+	for k in range(15):
 		Lce_n,Led_n,Ldd_n = swap(Lce,Led,Ldd)
-		while verif(Lce_n,Led_n,Ldd_n):
-			Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
-		Lce,Led,Ldd = Lce_n, Led_n, Ldd_n
+	while verif(Lce_n,Led_n,Ldd_n):
+		Lce_n, Led_n, Ldd_n = swap(Lce, Led, Ldd)
+	Lce,Led,Ldd = Lce_n, Led_n, Ldd_n
 
 	return Lce,Led,Ldd
 
-LCE,LED,LDD=init()
+def main():
+	Lce, Led, Ldd = init()
+	score_min = score(Lce, Led, Ldd)
+	for nombre in range(20):
+		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
+
+		print(score_min, "vs", score(Lce,Led,Ldd))
+		score_min = min(score(Lce, Led, Ldd), score_min)
+
+		Lce, Led, Ldd = perturbation(Lce, Led, Ldd)
+
+	print(score_min)
+	return
+
+#main()
+Lce, Led, Ldd = init()
+print("init = ", score(Lce,Led,Ldd))
+
+Lce, Led, Ldd = intensification(Lce, Led, Ldd)
+print("intense = ", score(Lce,Led,Ldd))
+
+Lce, Led, Ldd = perturbation(Lce,Led,Ldd)
+print("yo")
+Lce, Led, Ldd = intensification(Lce, Led, Ldd)
+print("intense = ", score(Lce,Led,Ldd))
+
+
+
 #print(verif(LCE,LED,LDD))
 
