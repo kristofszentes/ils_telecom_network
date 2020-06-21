@@ -90,7 +90,8 @@ def verif(L_ce,L_ed,L_dd): #verifies it is a solution
 def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given solution
     score = 0
     for i in range(1,len(L_ce)+1): #Cost of connecting customers to end offices
-        score += hij[(i,L_ce[i-1])]
+    	if L_ce[i-1] != 0:
+        	score += hij[(i,L_ce[i-1])]
 
     for i in range(1,len(L_ed)+1): #Cost of connecting end offices to digital hubs and of selecting digital hubs
         selected = []
@@ -110,6 +111,8 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 def neighbor(Lce,Led,Ldd):
     Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
     Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
+    Lce_n, Led_n, Ldd_n = swap_dd(Lce_n, Led_n, Ldd_n)
+
     if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd):
         if verif(Lce_n,Led_n,Ldd_n):
             return Lce_n, Led_n, Ldd_n, True
@@ -122,31 +125,49 @@ def neighbor(Lce,Led,Ldd):
 
 def swap_ce(Lce, Led, Ldd):
     L_ce, L_ed, L_dd = Lce.copy(),Led.copy(),Ldd.copy()
-    k1, k2 = randint(0, len(L_ce)-1), randint(0, len(L_ce)-1)
-    L_ce[k1], L_ce[k2] = L_ce[k2], L_ce[k1]
+    k = randint(0, len(L_ce)-1)
+    nouveau_end_office = randint(0,M)
+    L_ce[k] = nouveau_end_office
     return L_ce, L_ed, L_dd
 
 def swap_ed(Lce,Led,Ldd):
     L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
-    k1, k2 = randint(0, len(L_ed) - 1), randint(0, len(L_ed) - 1)
-    L_ed[k1], L_ed[k2] = L_ed[k2], L_ed[k1]
+    k = randint(0, len(L_ed)-1)
+    nouveau_digital_hub = randint(1,N)
+    L_ed[k] = nouveau_digital_hub
 
-    k11, k22 = L_ed[k1], L_ed[k2]
-
-    if L_dd[k11] == 0 and L_dd[k22 != 0]:
-        L_dd[k11], L_dd[k22] = L_dd[k22], L_dd[k11]
-        for i in range(len(Ldd)):
-            if L_dd[i] == k22:
-                L_dd[i] = k11
-
-    elif L_dd[k22] == 0 and L_dd[k11 != 0]:
-        L_dd[k22], L_dd[k11] = L_dd[k11], L_dd[k22]
-        for i in range(len(Ldd)):
-            if L_dd[i] == k11:
-                L_dd[i] = k22
+    k_bis = L_ed[k]
+ 
+    if L_dd[k_bis-1] == 0:
+    	L_dd[k_bis-1] = max(L_dd)+1
 
     return Lce,Led,Ldd
 
+def swap_dd(Lce,Led,Ldd):
+	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
+	k = randint(0,len(Ldd)-1)
+	choix = [i for i in range(1,len(Ldd)) if i not in L_dd]
+	new_digital_hub = choice(choix)
+	old_digital_hub = L_dd[k]
+	
+	if old_digital_hub != 0:
+		L_dd[new_digital_hub-1] = L_dd[old_digital_hub-1]
+		L_dd[old_digital_hub-1] = 0
+		L_dd[k] = new_digital_hub
+
+	else:
+		choix2 = [i for i in L_dd if i != 0]
+		apres_qui = choice(choix2)
+
+		L_dd[new_digital_hub-1] = L_dd[apres_qui-1]
+		L_dd[apres_qui-1] = k+1
+		L_dd[k] = new_digital_hub
+
+	for i in range(len(L_ed)):
+		if L_ed[i] == old_digital_hub:
+			L_ed[i] = new_digital_hub
+
+	return L_ce, L_ed, L_dd
 
 def intensification(Lce, Led, Ldd):
     compteur = 0
@@ -200,9 +221,10 @@ def double_bridge(Lce, Led, Ldd):
 
 def main():
     Lce, Led, Ldd = init()
+    print(Lce, Led, Ldd)
     score_min = score(Lce, Led, Ldd)
     print("score initial = ", score_min)
-    for nombre in range(10000):
+    for nombre in range(5000):
         Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
         score_min = min(score(Lce, Led, Ldd), score_min)
@@ -213,6 +235,7 @@ def main():
         	print(nombre,score_min)
 
     print("score final = ", score_min)
+    print("resultat final = ", Lce, Led, Ldd)
     return
 
 main()
