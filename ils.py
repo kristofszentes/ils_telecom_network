@@ -229,10 +229,23 @@ def insertion_ed(Lce,Led,Ldd):
 
 	return L_ce,L_ed,L_dd
 
-def swap_dd(Lce,Led,Ldd):
-	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
+def swap_dd(Ldd):
+	L_dd = Ldd.copy()
+	k1 = randint(0,len(Ldd)-1)
+	k2 = (k1+randint(2,len(Ldd)-1))
 
-	return L_ce,L_ed,L_dd
+	for k in range(len(Ldd)):
+		if Ldd[k]==k1:
+			L_dd[k]=k2
+		if Ldd[k]==k2:
+			L_dd[k]=k1
+		if Ldd[k1]==k:
+			L_dd[k2]=k
+		if Ldd[k2]==k:
+			L_dd[k1]=k
+
+
+	return L_dd
 
 def insertion_dd(Lce,Led,Ldd):
 	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
