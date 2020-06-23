@@ -186,8 +186,10 @@ def neighbor(Lce,Led,Ldd):
 	Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
 	Ldd_n = swap_dd(Ldd_n)
 
+
 	Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
 	Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
+	Lce_n, Led_n, Ldd_n = insertion_dd(Lce_n, Led_n, Ldd_n)
 	#Lce_n, Led_n, Ldd_n = swap_dd(Lce_n, Led_n, Ldd_n)
 
 	if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd):
@@ -258,27 +260,26 @@ def swap_dd(Ldd):
 
 def insertion_dd(Lce,Led,Ldd):
 	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
-	k = randint(0,len(Ldd)-1)
-	choix = [i for i in range(1,len(Ldd)) if i not in L_dd]
-	new_digital_hub = choice(choix)
-	old_digital_hub = L_dd[k]
+	choix = [i for i in range(1,len(Ldd)+1) if i not in L_dd]
+	choix.append(0)
+	k = choice(choix)
 	
-	if old_digital_hub != 0:
-		L_dd[new_digital_hub-1] = L_dd[old_digital_hub-1]
-		L_dd[old_digital_hub-1] = 0
-		L_dd[k] = new_digital_hub
+	if k != 0:
+		apres_qui = choice(liste_hub_utilises(L_dd))
 
-	else:
-		choix2 = [i for i in L_dd if i != 0]
-		apres_qui = choice(choix2)
+		L_dd[k-1] = L_dd[apres_qui-1]
+		L_dd[apres_qui-1] = k
+	elif len(liste_hub_utilises(L_dd)) > 3:
+		supprime = choice(liste_hub_utilises(L_dd))
 
-		L_dd[new_digital_hub-1] = L_dd[apres_qui-1]
-		L_dd[apres_qui-1] = k+1
-		L_dd[k] = new_digital_hub
+		for i in range(len(L_dd)):
+			if L_dd[i] == supprime:
+				L_dd[i] = L_dd[supprime-1]
+		L_dd[supprime-1] = 0
 
-	for i in range(len(L_ed)):
-		if L_ed[i] == old_digital_hub:
-			L_ed[i] = new_digital_hub
+		for i in range(len(L_ed)):
+			if L_ed[i] == supprime:
+				L_ed[i] = digital_hub_aleatoire(L_ed)
 
 	return L_ce, L_ed, L_dd
 
@@ -302,6 +303,12 @@ def perturbation_v1(Lce,Led,Ldd):
 	while compteur < 100:
 		Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
 		Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
+		Ldd_n = swap_dd(Ldd_n)
+
+
+		Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
+		Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
+		Lce_n, Led_n, Ldd_n = insertion_dd(Lce_n, Led_n, Ldd_n)
 		
 		if verif(Lce_n, Led_n, Ldd_n):
 			Lce,Led,Ldd = Lce_n,Led_n,Ldd_n
@@ -341,8 +348,8 @@ def main():
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
 		if nombre % 1000 == 0:
-			print(score(Lce,Led,Ldd))
-		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)
+			print(score(Lce,Led,Ldd),Lce,Led,Ldd)
+		Lce, Led, Ldd = perturbation_v1(Lce, Led, Ldd)
 		if nombre % 1000 == 0:
 			print(nombre,score_min)
 
