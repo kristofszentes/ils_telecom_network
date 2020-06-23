@@ -116,7 +116,6 @@ def init_random():
 	Ldd[digital_hubs_obliges[-1]-1] = digital_hubs_obliges[0]
 	
 	return Lce,Led,Ldd
-	
 
 
 def verif(L_ce,L_ed,L_dd): #verifies it is a solution
@@ -208,11 +207,16 @@ def swap_ed(Lce,Led,Ldd):
 	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
 	k1,k2 = randint(0, len(L_ed)-1),randint(0, len(L_ed)-1)
 	
-	L_ed[k1],L_ed[k2] = L_ed[k1],L_ed[k2]
+	L_ed[k1],L_ed[k2] = L_ed[k2],L_ed[k1]
 
 	return L_ce,L_ed,L_dd
 
 def swap_dd(Lce,Led,Ldd):
+	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
+
+	return L_ce,L_ed,L_dd
+
+def insertion_dd(Lce,Led,Ldd):
 	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
 	k = randint(0,len(Ldd)-1)
 	choix = [i for i in range(1,len(Ldd)) if i not in L_dd]
@@ -287,13 +291,12 @@ def double_bridge(Lce, Led, Ldd):
 	Lce_n[k1],Lce_n[k1+1],Lce_n[k2],Lce_n[(k2+1)%len(Lce)] = Lce[k2],Lce[(k2+1)%len(Lce)],Lce[k1],Lce[k1+1]
 	return Lce_n, Led_n, Ldd_n
 
-
 def main():
 	Lce, Led, Ldd = init_random()
 	print("solution initiale: ",Lce, Led, Ldd)
 	score_min = score(Lce, Led, Ldd)
 	print("score initial = ", score_min)
-	for nombre in range(5000):
+	for nombre in range(10000):
 		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
@@ -308,7 +311,6 @@ def main():
 	return
 
 main()
-print(init_random())
 #Lce, Led, Ldd = init()
 #print("init = ", score(Lce,Led,Ldd))
 
