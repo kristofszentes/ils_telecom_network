@@ -71,6 +71,13 @@ def est_plein_digital_hub(k,L_ed):
 def est_utilise_digital_hub(k,L_dd):
 	return k in L_dd
 
+def liste_hub_utilises(Ldd):
+	Ldd_cycle = []
+	for k in range(1,len(Ldd)+1):
+		if est_utilise_digital_hub(k,Ldd):
+			Ldd_cycle.append(k)
+	return Ldd_cycle
+
 def end_office_aleatoire(L_ce):
 	k = 0
 	trouve = False
@@ -177,6 +184,7 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 def neighbor(Lce,Led,Ldd):
 	Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
 	Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
+	Ldd_n = swap_dd(Ldd_n)
 
 	Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
 	Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
@@ -231,18 +239,19 @@ def insertion_ed(Lce,Led,Ldd):
 
 def swap_dd(Ldd):
 	L_dd = Ldd.copy()
-	k1 = randint(0,len(Ldd)-1)
-	k2 = (k1+randint(2,len(Ldd)-1))
+
+	k1 = choice(liste_hub_utilises(Ldd))
+	k2 = choice(liste_hub_utilises(Ldd))
 
 	for k in range(len(Ldd)):
 		if Ldd[k]==k1:
 			L_dd[k]=k2
 		if Ldd[k]==k2:
 			L_dd[k]=k1
-		if Ldd[k1]==k:
-			L_dd[k2]=k
-		if Ldd[k2]==k:
-			L_dd[k1]=k
+		if Ldd[k1-1]==k+1:
+			L_dd[k2-1]=k+1
+		if Ldd[k2-1]==k+1:
+			L_dd[k1-1]=k+1
 
 
 	return L_dd
