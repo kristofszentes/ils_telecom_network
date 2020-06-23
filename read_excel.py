@@ -64,8 +64,8 @@ print("alpha: ", alpha)
 print("N: ",N)
 print("hij: ",hij)
 print("cjk: ",cjk)
-print("gkm: ", gkm)
+print("gkm: ", gkm)"""
 print("fk: ",fk)
 print("Uj: ", Uj)
-print("Vk: ",Vk)"""
+print("Vk: ",Vk)
 print("excel loaded")

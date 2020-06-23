@@ -167,15 +167,15 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 			score += hij[(i,L_ce[i-1])]
 
 	for i in range(1,len(L_ed)+1): #Cost of connecting end offices to digital hubs and of selecting digital hubs
-		selected = []
 		score += cjk[(i,L_ed[i-1])]
-		if L_ed[i-1] not in selected and L_ed[i-1] != 0:
-			score += fk[L_ed[i-1]-1]
-			selected.append(L_ed[i-1])
 
+	selected = []
 	for i in range(1,len(L_dd)+1): #Cost of connecting digital hubs to each other
 		if L_dd[i-1] != 0:
 			score += gkm[(i,L_dd[i-1])]
+			if L_dd[i-1] not in selected:
+				score += fk[i-1]
+				selected.append(L_dd[i-1])
 	#score += gkm(1,L_dd(len(L_dd)))
 
 	return score
@@ -244,16 +244,16 @@ def swap_dd(Ldd):
 
 	k1 = choice(liste_hub_utilises(Ldd))
 	k2 = choice(liste_hub_utilises(Ldd))
-
-	for k in range(len(Ldd)):
-		if Ldd[k]==k1:
-			L_dd[k]=k2
-		if Ldd[k]==k2:
-			L_dd[k]=k1
-		if Ldd[k1-1]==k+1:
-			L_dd[k2-1]=k+1
-		if Ldd[k2-1]==k+1:
-			L_dd[k1-1]=k+1
+	if not L_dd[k1-1] == k2 and not Ldd[k2-1] == k1:
+		for k in range(len(Ldd)):
+			if Ldd[k]==k1:
+				L_dd[k]=k2
+			if Ldd[k]==k2:
+				L_dd[k]=k1
+			if Ldd[k1-1]==k+1:
+				L_dd[k2-1]=k+1
+			if Ldd[k2-1]==k+1:
+				L_dd[k1-1]=k+1
 
 
 	return L_dd
@@ -339,7 +339,7 @@ def double_bridge(Lce, Led, Ldd):
 	return Lce_n, Led_n, Ldd_n
 
 def main():
-	Lce, Led, Ldd = init()
+	Lce, Led, Ldd = init_random()
 	print("solution initiale: ",Lce, Led, Ldd)
 	score_min = score(Lce, Led, Ldd)
 	print("score initial = ", score_min)
@@ -349,7 +349,7 @@ def main():
 		score_min = min(score(Lce, Led, Ldd), score_min)
 		if nombre % 1000 == 0:
 			print(score(Lce,Led,Ldd),Lce,Led,Ldd)
-		Lce, Led, Ldd = perturbation_v1(Lce, Led, Ldd)
+		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)
 		if nombre % 1000 == 0:
 			print(nombre,score_min)
 
@@ -372,4 +372,3 @@ main()
 
 
 #print(verif(LCE,LED,LDD))
-
