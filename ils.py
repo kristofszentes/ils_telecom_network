@@ -62,7 +62,7 @@ def est_plein_end_office(k,L_ce):
 def est_plein_digital_hub(k,L_ed):
 	utilisateurs = 0
 	for j in range(len(L_ed)):
-		if L_ed[j] == 1:
+		if L_ed[j] == k:
 			utilisateurs += 1
 	if utilisateurs >= Vk[k-1]:
 		return True
@@ -177,6 +177,9 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 def neighbor(Lce,Led,Ldd):
 	Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
 	Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
+
+	Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
+	Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
 	#Lce_n, Led_n, Ldd_n = swap_dd(Lce_n, Led_n, Ldd_n)
 
 	if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd):
@@ -208,6 +211,21 @@ def swap_ed(Lce,Led,Ldd):
 	k1,k2 = randint(0, len(L_ed)-1),randint(0, len(L_ed)-1)
 	
 	L_ed[k1],L_ed[k2] = L_ed[k2],L_ed[k1]
+
+	return L_ce,L_ed,L_dd
+
+def insertion_ed(Lce,Led,Ldd):
+	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
+	k = randint(0, len(L_ed)-1)
+	nouveau_digital_hub = choice(L_dd)
+
+	if nouveau_digital_hub == 0: #Le cas ou on enleve un end office
+		for i in range(len(L_ce)):
+			if L_ce[i] == k+1:
+				L_ce[i] = end_office_aleatoire(L_ce)
+
+	elif not est_plein_digital_hub(nouveau_digital_hub, L_ed):
+		L_ed[k] = nouveau_digital_hub
 
 	return L_ce,L_ed,L_dd
 
@@ -292,11 +310,11 @@ def double_bridge(Lce, Led, Ldd):
 	return Lce_n, Led_n, Ldd_n
 
 def main():
-	Lce, Led, Ldd = init_random()
+	Lce, Led, Ldd = init()
 	print("solution initiale: ",Lce, Led, Ldd)
 	score_min = score(Lce, Led, Ldd)
 	print("score initial = ", score_min)
-	for nombre in range(10000):
+	for nombre in range(5000):
 		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
