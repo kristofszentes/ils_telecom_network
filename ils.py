@@ -151,11 +151,14 @@ def verif(L_ce,L_ed,L_dd): #verifies it is a solution
 
 	for i in range(1,len(L_dd)+1): #Les capacites des digital hubs
 		utilisateurs = 0
-		for j in range(len(L_ed)):
-			if L_ed[j] == i:
+		for j in range(1,len(L_ed)+1):
+			if L_ed[j-1] == i:
 				for k in range(len(L_ce)):
-					if L_ce[k] == j+1:
+					if L_ce[k] == j:
 						utilisateurs += 1
+
+		if utilisateurs > 0 and L_dd[i-1] == 0:
+			return False
 		if utilisateurs > Vk[i-1]:
 			return False
 
@@ -194,11 +197,9 @@ def neighbor(Lce,Led,Ldd):
 	Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
 	Ldd_n = swap_dd(Ldd_n)
 
-
 	Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
 	Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
 	Lce_n, Led_n, Ldd_n = insertion_dd(Lce_n, Led_n, Ldd_n)
-	#Lce_n, Led_n, Ldd_n = swap_dd(Lce_n, Led_n, Ldd_n)
 
 	if score(Lce_n, Led_n, Ldd_n) < score(Lce, Led, Ldd):
 		if verif(Lce_n,Led_n,Ldd_n):
@@ -359,11 +360,10 @@ def main():
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
 		if nombre % 100 == 0:
-			print("tour numéro: ", nombre, ",score actuel: ",score(Lce,Led,Ldd),",score minimal :",score_min,",solution: ",Lce,Led,Ldd)
+			print("tour numéro: ", nombre, ",score actuel: ",score(Lce,Led,Ldd),",score minimal :",score_min,",solution actuelle: ",Lce,Led,Ldd)
 		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)	
 
-	print("score final = ", score_min)
-	print("resultat final = ", Lce, Led, Ldd)
+	print("score final = ", score_min,", resultat final = ", Lce, Led, Ldd)
 	return
 
 main()

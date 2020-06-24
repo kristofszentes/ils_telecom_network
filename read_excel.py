@@ -54,7 +54,6 @@ print("hij: ",hij)
 print("cjk: ",cjk)
 print("gkm: ", gkm)
 print("fk: ",fk)
-print("Uj: ", Uj)
+print("Uj: ", Uj)"""
 print("Vk: ",Vk)
-"""
 print("excel loaded")
