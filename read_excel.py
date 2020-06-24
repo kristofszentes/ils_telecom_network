@@ -32,18 +32,6 @@ def read_excel_data(filename, sheet_name):
 """
 # This section reads the data from Excel #
 
-# Read a set (set is the name of the worksheet)
-# The set has eight elements
-set_I = read_excel_data(InputData, "C")
-print("set: ", set_I)
-
-# Read an array 1x1 (array1 is the name of the worksheet)
-array1 = read_excel_data(InputData, "CustToTargetAllocCost(hij)")
-print("array1: ", array1)
-
-# Read an array 4x4 (array2 is the name of the worksheet)
-array2 = read_excel_data(InputData, "alpha")
-print("array2: ", array2)
 """
 
 
@@ -64,8 +52,9 @@ print("alpha: ", alpha)
 print("N: ",N)
 print("hij: ",hij)
 print("cjk: ",cjk)
-print("gkm: ", gkm)"""
+print("gkm: ", gkm)
 print("fk: ",fk)
 print("Uj: ", Uj)
 print("Vk: ",Vk)
+"""
 print("excel loaded")

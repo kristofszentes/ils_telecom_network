@@ -59,11 +59,13 @@ def est_plein_end_office(k,L_ce):
 		return True
 	return False
 
-def est_plein_digital_hub(k,L_ed):
+def est_plein_digital_hub(k,L_ed,L_ce):
 	utilisateurs = 0
 	for j in range(len(L_ed)):
 		if L_ed[j] == k:
-			utilisateurs += 1
+			for i in range(len(L_ce)):
+				if L_ce[i] == j+1:
+					utilisateurs += 1
 	if utilisateurs >= Vk[k-1]:
 		return True
 	return False
@@ -87,12 +89,12 @@ def end_office_aleatoire(L_ce):
 			trouve = True
 	return k
 
-def digital_hub_aleatoire(L_ed):
+def digital_hub_aleatoire(L_ce,L_ed):
 	k = 0
 	trouve = False
 	while not trouve:
 		k = randint(1,N)
-		if not est_plein_digital_hub(k,L_ed):
+		if not est_plein_digital_hub(k,L_ed,L_ce):
 			trouve = True
 	return k
 
@@ -104,19 +106,23 @@ def init_random():
 	Led = [0 for k in range(M)]
 	Ldd = [0 for k in range(N)]
 
-	clients = sample(range(1,C), int(alpha*C))
+	clients = sample(range(1,C), int(alpha*C+1))
 	for c in clients:
 		end_off = end_office_aleatoire(Lce)
 		Lce[c] = end_off
 
 	for i in range(M):
-		digital_hub = digital_hub_aleatoire(Led)
+		digital_hub = digital_hub_aleatoire(Lce,Led)
 		Led[i] = digital_hub
 
 	digital_hubs_obliges = []
 	for i in range(len(Led)):
 		if Led[i] not in digital_hubs_obliges:
 			digital_hubs_obliges.append(Led[i])
+
+	if len(digital_hubs_obliges) < 3:
+		for i in range(3-len(digital_hubs_obliges)):
+			digital_hubs_obliges.append(digital_hub_aleatoire(Lce,Led))
 
 	for i in range(len(digital_hubs_obliges)-1):
 		Ldd[digital_hubs_obliges[i]-1] = digital_hubs_obliges[i+1]
@@ -146,8 +152,10 @@ def verif(L_ce,L_ed,L_dd): #verifies it is a solution
 	for i in range(1,len(L_dd)+1): #Les capacites des digital hubs
 		utilisateurs = 0
 		for j in range(len(L_ed)):
-			if L_ed[j] == 1:
-				utilisateurs += 1
+			if L_ed[j] == i:
+				for k in range(len(L_ce)):
+					if L_ce[k] == j+1:
+						utilisateurs += 1
 		if utilisateurs > Vk[i-1]:
 			return False
 
@@ -227,14 +235,14 @@ def swap_ed(Lce,Led,Ldd):
 def insertion_ed(Lce,Led,Ldd):
 	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
 	k = randint(0, len(L_ed)-1)
-	nouveau_digital_hub = choice(L_dd)
+	nouveau_digital_hub = choice(liste_hub_utilises(L_dd))
 
-	if nouveau_digital_hub == 0: #Le cas ou on enleve un end office
+	if nouveau_digital_hub == 0: #Le cas ou on enleve un end office (cas impossible en fait on doit tous les utiliser)
 		for i in range(len(L_ce)):
 			if L_ce[i] == k+1:
 				L_ce[i] = end_office_aleatoire(L_ce)
 
-	elif not est_plein_digital_hub(nouveau_digital_hub, L_ed):
+	elif not est_plein_digital_hub(nouveau_digital_hub, L_ed, L_ce):
 		L_ed[k] = nouveau_digital_hub
 
 	return L_ce,L_ed,L_dd
@@ -279,7 +287,7 @@ def insertion_dd(Lce,Led,Ldd):
 
 		for i in range(len(L_ed)):
 			if L_ed[i] == supprime:
-				L_ed[i] = digital_hub_aleatoire(L_ed)
+				L_ed[i] = digital_hub_aleatoire(L_ce, L_ed)
 
 	return L_ce, L_ed, L_dd
 
@@ -340,35 +348,22 @@ def double_bridge(Lce, Led, Ldd):
 
 def main():
 	Lce, Led, Ldd = init_random()
-	print("solution initiale: ",Lce, Led, Ldd)
+	while not verif(Lce,Led,Ldd):
+		Lce, Led, Ldd = init_random()
+
 	score_min = score(Lce, Led, Ldd)
-	print("score initial = ", score_min)
-	for nombre in range(5000):
+	print("score initial = ", score_min, ", solution initiale: ",Lce, Led, Ldd)
+	
+	for nombre in range(3000):
 		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
-		if nombre % 1000 == 0:
-			print(score(Lce,Led,Ldd),Lce,Led,Ldd)
-		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)
-		if nombre % 1000 == 0:
-			print(nombre,score_min)
+		if nombre % 100 == 0:
+			print("tour numéro: ", nombre, ",score actuel: ",score(Lce,Led,Ldd),",score minimal :",score_min,",solution: ",Lce,Led,Ldd)
+		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)	
 
 	print("score final = ", score_min)
 	print("resultat final = ", Lce, Led, Ldd)
 	return
 
 main()
-#Lce, Led, Ldd = init()
-#print("init = ", score(Lce,Led,Ldd))
-
-#Lce, Led, Ldd = intensification(Lce, Led, Ldd)
-#print("intense = ", score(Lce,Led,Ldd))
-
-#Lce, Led, Ldd = perturbation(Lce,Led,Ldd)
-#print("ok?")
-#Lce, Led, Ldd = intensification(Lce, Led, Ldd)
-#print("intense = ", score(Lce,Led,Ldd))
-
-
-
-#print(verif(LCE,LED,LDD))
