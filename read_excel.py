@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-InputData = "InputDataTelecomSmallInstance.xlsx"
+InputData = "InputDataTelecomLargeInstance.xlsx"
 
     # Input Data Preparation #
 def read_excel_data(filename, sheet_name):
@@ -46,14 +46,4 @@ fk=read_excel_data(InputData, "SteinerFixedCost(fk)")
 Uj=read_excel_data(InputData,"TargetCapicity(Uj)")
 Vk=read_excel_data(InputData, "SteinerCapacity(Vk)")
 
-"""print("C: ",C)
-print("M: ", M)
-print("alpha: ", alpha)
-print("N: ",N)
-print("hij: ",hij)
-print("cjk: ",cjk)
-print("gkm: ", gkm)
-print("fk: ",fk)
-print("Uj: ", Uj)"""
-print("Vk: ",Vk)
 print("excel loaded")

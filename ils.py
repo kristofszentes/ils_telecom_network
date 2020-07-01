@@ -8,48 +8,6 @@ L_ed  #liste end-office/digital hub
 L_dd  #liste digital hub/digital hub le numéro en position k indique à quel hub est relié le hub k
 """
 
-
-def init():
-	Lce=[0 for k in range(C)]
-	Led = [0 for k in range(M)]
-	Ldd = [0 for k in range(N)]
-
-	capa_end = 0
-	capa_digi = 0
-	compteur = 1
-
-	for customer in range(C):
-		capa_end += 1
-		if capa_end <= Uj[compteur-1]:
-			Lce[customer] = compteur
-		else:
-			capa_end = 1 #sous-entend que chaque end office a une capa de 1 minimum
-			compteur += 1
-			if compteur > M:
-				break
-			else:
-				Lce[customer] = compteur
-
-	compteur = 1
-
-	for end in range(M):
-		capa_digi += 1
-		if capa_digi <= Uj[compteur-1]:
-			Led[end] = compteur
-		else:
-			capa_digi = 1 #sous-entend que chaque hub a une capa de 1 minimum
-			compteur += 1
-			if compteur > N:
-				break
-			else:
-				Led[end] = compteur
-
-	for k in range(compteur-1):
-		Ldd[k]=k+2
-	Ldd[compteur-1]=1
-
-	return Lce,Led,Ldd
-
 def est_plein_end_office(k,L_ce):
 	utilisateurs = 0
 	for i in range(len(L_ce)):
@@ -97,9 +55,6 @@ def digital_hub_aleatoire(L_ce,L_ed):
 		if not est_plein_digital_hub(k,L_ed,L_ce):
 			trouve = True
 	return k
-
-def place_aleatoire(L_dd):
-	return None
 
 def init_random():
 	Lce=[0 for k in range(C)]
@@ -193,11 +148,11 @@ def score(L_ce,L_ed,L_dd): #Calculates the objective function value for a given 
 
 
 def neighbor(Lce,Led,Ldd):
-	Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
-	Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
-	Ldd_n = swap_dd(Ldd_n)
+	Lce_n = swap_ce(Lce)
+	Led_n = swap_ed(Led)
+	Ldd_n = swap_dd(Ldd)
 
-	Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
+	Lce_n = insertion_ce(Lce_n)
 	Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
 	Lce_n, Led_n, Ldd_n = insertion_dd(Lce_n, Led_n, Ldd_n)
 
@@ -211,27 +166,27 @@ def neighbor(Lce,Led,Ldd):
 		return Lce, Led, Ldd, False
 
 
-def swap_ce(Lce, Led, Ldd):
-	L_ce, L_ed, L_dd = Lce.copy(),Led.copy(),Ldd.copy()
+def swap_ce(Lce):
+	L_ce = Lce.copy()
 	k1,k2 = randint(0, len(L_ce)-1),randint(0, len(L_ce)-1)
 	
 	L_ce[k1],L_ce[k2] = L_ce[k2],L_ce[k1]
-	return L_ce, L_ed, L_dd
+	return L_ce
 
-def insertion_ce(Lce, Led, Ldd):
-	L_ce, L_ed, L_dd = Lce.copy(),Led.copy(),Ldd.copy()
+def insertion_ce(Lce):
+	L_ce = Lce.copy()
 	k = randint(0, len(L_ce)-1)
 	nouveau_end_office = randint(0,M)
 	L_ce[k] = nouveau_end_office
-	return L_ce, L_ed, L_dd
+	return L_ce
 
-def swap_ed(Lce,Led,Ldd):
-	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
+def swap_ed(Led):
+	L_ed = Led.copy()
 	k1,k2 = randint(0, len(L_ed)-1),randint(0, len(L_ed)-1)
 	
 	L_ed[k1],L_ed[k2] = L_ed[k2],L_ed[k1]
 
-	return L_ce,L_ed,L_dd
+	return L_ed
 
 def insertion_ed(Lce,Led,Ldd):
 	L_ce, L_ed, L_dd = Lce.copy(), Led.copy(), Ldd.copy()
@@ -306,16 +261,15 @@ def intensification(Lce, Led, Ldd):
 	return Lce, Led, Ldd
 
 
-
 def perturbation_v1(Lce,Led,Ldd):
 	compteur = 0
 	while compteur < 100:
-		Lce_n, Led_n, Ldd_n = swap_ce(Lce, Led, Ldd)
-		Lce_n, Led_n, Ldd_n = swap_ed(Lce_n, Led_n, Ldd_n)
-		Ldd_n = swap_dd(Ldd_n)
+		Lce_n = swap_ce(Lce)
+		Led_n = swap_ed(Led)
+		Ldd_n = swap_dd(Ldd)
 
 
-		Lce_n, Led_n, Ldd_n = insertion_ce(Lce_n, Led_n, Ldd_n)
+		Lce_n = insertion_ce(Lce_n)
 		Lce_n, Led_n, Ldd_n = insertion_ed(Lce_n, Led_n, Ldd_n)
 		Lce_n, Led_n, Ldd_n = insertion_dd(Lce_n, Led_n, Ldd_n)
 		
@@ -355,7 +309,7 @@ def main():
 	score_min = score(Lce, Led, Ldd)
 	print("score initial = ", score_min, ", solution initiale: ",Lce, Led, Ldd)
 	
-	for nombre in range(3000):
+	for nombre in range(10000):
 		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
