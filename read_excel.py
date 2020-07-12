@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 
-InputData = "InputDataTelecomLargeInstance.xlsx"
-
     # Input Data Preparation #
 def read_excel_data(filename, sheet_name):
     data = pd.read_excel(filename, sheet_name=sheet_name, header=None)
@@ -34,17 +32,20 @@ def read_excel_data(filename, sheet_name):
 
 """
 
-
-C = read_excel_data(InputData, "C")[0]
-M = read_excel_data(InputData, "M")[0]
-alpha=read_excel_data(InputData,"alpha")[0]
-N=read_excel_data(InputData,"N")[0]
-hij=read_excel_data(InputData,"CustToTargetAllocCost(hij)")
-cjk=read_excel_data(InputData,"TargetToSteinerAllocCost(cjk)")
-gkm=read_excel_data(InputData, "SteinerToSteinerConnctCost(gkm)")
-fk=read_excel_data(InputData, "SteinerFixedCost(fk)")
-Uj=read_excel_data(InputData,"TargetCapicity(Uj)")
-Vk=read_excel_data(InputData, "SteinerCapacity(Vk)")
+def load_excel_data(size):
+    InputData = "InputDataTelecom" + size + "Instance.xlsx" 
+    C = read_excel_data(InputData, "C")[0]
+    M = read_excel_data(InputData, "M")[0]
+    alpha=read_excel_data(InputData,"alpha")[0]
+    N=read_excel_data(InputData,"N")[0]
+    hij=read_excel_data(InputData,"CustToTargetAllocCost(hij)")
+    cjk=read_excel_data(InputData,"TargetToSteinerAllocCost(cjk)")
+    gkm=read_excel_data(InputData, "SteinerToSteinerConnctCost(gkm)")
+    fk=read_excel_data(InputData, "SteinerFixedCost(fk)")
+    Uj=read_excel_data(InputData,"TargetCapicity(Uj)")
+    Vk=read_excel_data(InputData, "SteinerCapacity(Vk)")
+    print("excel loaded")
+    return C,M,alpha,N,hij,cjk,gkm,fk,Uj,Vk
 
 """print("C: ",C)
 print("M: ", M)
@@ -54,6 +55,5 @@ print("hij: ",hij)
 print("cjk: ",cjk)
 print("gkm: ", gkm)
 print("fk: ",fk)
-print("Uj: ", Uj)"""
-print("Vk: ",Vk)
-print("excel loaded")
+print("Uj: ", Uj)
+print("Vk: ",Vk)"""

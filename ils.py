@@ -302,6 +302,7 @@ def double_bridge(Lce, Led, Ldd):
 	return Lce_n, Led_n, Ldd_n
 
 def main():
+	#Creation of the initial solution
 	Lce, Led, Ldd = init_random()
 	while not verif(Lce,Led,Ldd):
 		Lce, Led, Ldd = init_random()
@@ -309,7 +310,7 @@ def main():
 	score_min = score(Lce, Led, Ldd)
 	print("score initial = ", score_min, ", solution initiale: ",Lce, Led, Ldd)
 	
-	for nombre in range(10000):
+	for nombre in range(5000):
 		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
@@ -318,6 +319,13 @@ def main():
 		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)	
 
 	print("score final = ", score_min,", resultat final = ", Lce, Led, Ldd)
-	return
+	return None
 
-main()
+if __name__=='__main__':
+	#Here you can choose if you want to load the Small or the Large problem data
+	problem_size = 'Small' #'Small' or 'Large'
+
+	#We load the corresponding data
+	C,M,alpha,N,hij,cjk,gkm,fk,Uj,Vk = load_excel_data(problem_size)
+	
+	main()
