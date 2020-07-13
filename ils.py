@@ -310,12 +310,12 @@ def main():
 	score_min = score(Lce, Led, Ldd)
 	print("score initial = ", score_min, ", solution initiale: ",Lce, Led, Ldd)
 	
-	for nombre in range(5000):
+	for nombre in range(tours):
 		Lce, Led, Ldd = intensification(Lce, Led, Ldd)
 
 		score_min = min(score(Lce, Led, Ldd), score_min)
 		if nombre % 100 == 0:
-			print("tour numéro: ", nombre, ",score actuel: ",score(Lce,Led,Ldd),",score minimal :",score_min,",solution actuelle: ",Lce,Led,Ldd)
+			print("tour numéro: ", nombre,"/",str(tours), ",score actuel: ",score(Lce,Led,Ldd),",score minimal :",score_min,",solution actuelle: ",Lce,Led,Ldd)
 		Lce, Led, Ldd = perturbation_v2(Lce, Led, Ldd)	
 
 	print("score final = ", score_min,", resultat final = ", Lce, Led, Ldd)
@@ -323,7 +323,8 @@ def main():
 
 if __name__=='__main__':
 	#Here you can choose if you want to load the Small or the Large problem data
-	problem_size = 'Small' #'Small' or 'Large'
+	problem_size = 'Large' #'Small' or 'Large'
+	tours = 5000
 
 	#We load the corresponding data
 	C,M,alpha,N,hij,cjk,gkm,fk,Uj,Vk = load_excel_data(problem_size)

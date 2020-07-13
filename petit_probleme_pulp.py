@@ -4,10 +4,11 @@ import pandas as pd
 import numpy as np
 import itertools
 import math as mt
+import os
 
 if __name__ == "__main__":
     
-    InputData = "InputDataTelecomSmallInstance.xlsx"
+    InputData = os.path.join("inputData","InputDataTelecomSmallInstance.xlsx")
 
   # Input Data Preparation #
     def read_excel_data(filename, sheet_name):

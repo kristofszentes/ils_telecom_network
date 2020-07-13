@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
     # Input Data Preparation #
 def read_excel_data(filename, sheet_name):
@@ -33,7 +34,7 @@ def read_excel_data(filename, sheet_name):
 """
 
 def load_excel_data(size):
-    InputData = "InputDataTelecom" + size + "Instance.xlsx" 
+    InputData = os.path.join("inputData","InputDataTelecom" + size + "Instance.xlsx")
     C = read_excel_data(InputData, "C")[0]
     M = read_excel_data(InputData, "M")[0]
     alpha=read_excel_data(InputData,"alpha")[0]
